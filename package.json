@@ -1,0 +1,25 @@
+{
+  "name": "tiny-house-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "env.js",
+  "scripts": {
+    "knex": "knex",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/analuzac/tiny-house-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/analuzac/tiny-house-api/issues"
+  },
+  "homepage": "https://github.com/analuzac/tiny-house-api#readme",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "knex": "^0.13.0",
+    "pg": "^7.3.0"
+  }
+}
