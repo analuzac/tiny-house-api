@@ -19,6 +19,7 @@
   "homepage": "https://github.com/analuzac/tiny-house-api#readme",
   "dependencies": {
     "dotenv": "^4.0.0",
+    "express": "^4.16.2",
     "knex": "^0.13.0",
     "pg": "^7.3.0"
   }
