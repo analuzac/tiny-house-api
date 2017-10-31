@@ -7,8 +7,7 @@ const { suite, test } = require('mocha');
 const request = require('supertest');
 // const knex = require('../knex');
 const { addDatabaseHooks } = require('./utils');
-//const server = require('../server');
-const router = require('../instances/listingsRouter');
+const server = require('../server');
 
 describe(
   'listings routes',
@@ -17,7 +16,7 @@ describe(
     // GET ALL
     //
     it('GET /listings', done => {
-      request(router)
+      request(server)
         .get('/listings')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -50,8 +49,8 @@ describe(
     //
     // GET ONE
     //
-    xit('GET /listings/:listingId(\\d+)', done => {
-      request(router)
+    it('GET /listings/:listingId(\\d+)', done => {
+      request(server)
         .get('/listings/1')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -73,8 +72,8 @@ describe(
     //
     // POST
     //
-    xit('POST /users/:userId(\\d+)/listings', done => {
-      request(router)
+    it('POST /users/:userId(\\d+)/listings', done => {
+      request(server)
         .post('/users/1/listings')
         .set('Accept', 'application/json')
         .send({
@@ -108,8 +107,8 @@ describe(
     //
     // PATCH
     //
-    xit('PATCH /listings/:listingId(\\d+)', done => {
-      request(router)
+    it('PATCH /listings/:listingId(\\d+)', done => {
+      request(server)
         .patch('/listings/1')
         .set('Accept', 'application/json')
         .send({
@@ -138,8 +137,8 @@ describe(
     //
     // DELETE
     //
-    xit('DELETE /listings/:listingId(\\d+)', done => {
-      request(router)
+    it('DELETE /listings/:listingId(\\d+)', done => {
+      request(server)
         .del('/listings/1')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -155,7 +154,7 @@ describe(
             dimensions: 300,
             rent: 500,
             date: 'November 10, 2017',
-            amenities: 'next to public transit'
+            amenities: 'water hose, washer & dryer, backyard puppie'
           },
           done
         );
