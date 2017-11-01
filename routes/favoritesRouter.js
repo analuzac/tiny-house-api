@@ -1,12 +1,13 @@
 const express = require('express');
-const Boom = require('boom');
 const router = express.Router();
+const knex = require('../knex');
+const Boom = require('boom');
 
 // const listingsController = require('./listingsController');
 //
-// router.get('/listings', listingsController.getAll);
-// router.post('/listings', listingsController.create);
-//
+// router.get('/listings', favoritesController.getAll);
+// router.post('/listings', favoritesController.create);
+// router.delete('/listings', favoritesController.delete);
 
 // Happy paths:
 

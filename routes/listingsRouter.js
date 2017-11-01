@@ -1,10 +1,9 @@
 const express = require('express');
-
 const router = express.Router();
 const knex = require('../knex');
-const bodyParser = require('body-parser');
 const Boom = require('boom');
 
+//const bodyParser = require('body-parser');
 //router.use(bodyParser.json());
 
 // const listingsController = require('./listingsController');
@@ -20,35 +19,51 @@ const Boom = require('boom');
 // Get all listings:
 router.get('/listings', function(req, res, next) {
   //
-  knex('Listing').select('*').then(listings => {
-    let result = listings;
-    let output = [];
-    result.forEach(item => {
-      delete item.timeCreated;
-      delete item.timeModified;
-      output.push(Object.assign({}, item));
-    });
+  knex('Listing')
+    .select('*')
+    .then(listings => {
+      //console.log(listings);
+      let result = listings;
+      let output = [];
+      result.forEach(item => {
+        delete item.timeCreated;
+        delete item.timeModified;
+        output.push(Object.assign({}, item));
+      });
 
-    res.json(output);
-  });
+      res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
+    });
 });
-//.catch(err => next(err));
 
 // Get one listing:
 router.get('/listings/:listingId(\\d+)', function(req, res, next) {
-  knex('Listing').where('id', req.params.listingId).first().then(listing => {
-    let result = listing;
-    let output = Object.assign({}, result);
-    delete output.timeCreated;
-    delete output.timeModified;
+  knex('Listing')
+    .where('id', req.params.listingId)
+    .first()
+    .then(listing => {
+      let result = listing;
+      let output = Object.assign({}, result);
+      delete output.timeCreated;
+      delete output.timeModified;
 
-    res.json(output);
-  });
+      res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
+    });
 });
 //.catch(err => next(err));
 
 // Create a listing:
 router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
+  //
+  console.log('DO I GET IN HERE?');
+  console.log('BEFORE KNEX', req);
   knex('Listing')
     .insert(
       {
@@ -66,11 +81,14 @@ router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
       let output = Object.assign({}, result[0]);
       delete output.timeCreated;
       delete output.timeModified;
-
+      console.log('INSIDE POST BACKEND', output);
       res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
     });
 });
-//.catch(err => next(err));
 
 // Update a listing:
 router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
@@ -97,12 +115,14 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
       let output = Object.assign({}, result[0]);
       delete output.timeCreated;
       delete output.timeModified;
-
+      console.log('INSIDE PATCH BACKEND', output);
       res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
     });
-  //res.send(200);
 });
-//.catch(err => next(err));
 
 // Delete a listing:
 router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
@@ -121,9 +141,12 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
       delete output.timeModified;
 
       res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
     });
 });
-//.catch(err => next(err));
 
 // All non-happy paths:
 

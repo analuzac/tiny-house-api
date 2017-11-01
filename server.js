@@ -11,6 +11,8 @@ const bodyParser = require('body-parser');
 //const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 
+const cors = require('cors');
+
 switch (process.env.NODE_ENV) {
   case 'development':
     app.use(morgan('dev'));
@@ -22,22 +24,23 @@ switch (process.env.NODE_ENV) {
 }
 
 app.use(bodyParser.json());
+app.use(cors());
 //app.use(cookieParser());
 
 const path = require('path');
 
 app.use(express.static(path.join('public')));
 
-// CSRF protection
-app.use((request, response, next) => {
-  if (/json/.test(request.get('Accept'))) {
-    next();
-    return;
-  }
-  response.sendStatus(406);
-});
+// // CSRF protection
+// app.use((request, response, next) => {
+//   if (/json/.test(request.get('Accept'))) {
+//     next();
+//     return;
+//   }
+//   response.sendStatus(406);
+// });
 
-const listings = require('./instances/listingsRouter');
+const listings = require('./routes/listingsRouter');
 // const favorites = require('./routes/favorites');
 // const token = require('./routes/token');
 // const users = require('./routes/users');

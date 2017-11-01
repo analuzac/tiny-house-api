@@ -1,6 +1,7 @@
 const express = require('express');
-const Boom = require('boom');
 const router = express.Router();
+const knex = require('../knex');
+const Boom = require('boom');
 
 // const tokenController = require('./tokenController');
 //
