@@ -41,14 +41,14 @@ app.use(express.static(path.join('public')));
 // });
 
 const listings = require('./routes/listingsRouter');
-// const favorites = require('./routes/favorites');
-// const token = require('./routes/token');
-// const users = require('./routes/users');
+const users = require('./routes/usersRouter');
+const token = require('./routes/tokenRouter');
+const favorites = require('./routes/favoritesRouter');
 
 app.use(listings);
-// app.use(favorites);
-// app.use(token);
-// app.use(users);
+app.use(users);
+app.use(token);
+app.use(favorites);
 
 app.use((request, response) => {
   response.sendStatus(404);

@@ -31,3 +31,5 @@ router
     res.send(200);
   })
   .catch(err => next(err));
+
+module.exports = router;
