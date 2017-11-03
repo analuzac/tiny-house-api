@@ -59,6 +59,7 @@ router.get('/listings/:listingId(\\d+)', function(req, res, next) {
     .where('id', req.params.listingId)
     .first()
     .then(listing => {
+      console.log('LE LISTING OWNER', listing.userId);
       let result = listing;
       let output = Object.assign({}, result);
       delete output.timeCreated;
@@ -73,7 +74,9 @@ router.get('/listings/:listingId(\\d+)', function(req, res, next) {
 });
 
 // Create a listing:
-router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
+router.post('/listings', function(req, res, next) {
+  ///users/:userId(\\d+)/listings
+  //
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
@@ -87,12 +90,12 @@ router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
     return;
   }
   //
-  console.log('DO I GET IN HERE?');
-  console.log('BEFORE KNEX', req);
+
   knex('Listing')
     .insert(
       {
-        userId: req.params.userId,
+        // userId: req.params.userId,
+        userId: leUserId,
         location: req.body.location,
         dimensions: req.body.dimensions,
         rent: req.body.rent,
@@ -102,6 +105,7 @@ router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
       '*'
     )
     .then(listing => {
+      console.log('LE LISTING OWNER', listing.userId);
       let result = listing;
       let output = Object.assign({}, result[0]);
       delete output.timeCreated;
@@ -179,7 +183,7 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
   let leUserId = decodedToken.sub;
   console.log('LE USER', leUserId);
   //
-  // First you need to be a registered user to make it this far:
+  // First you need to be a registeredF user to make it this far:
   if (!storedToken) {
     res.status(401).send('Unauthorized - you need to be a registered user');
     return;
@@ -196,10 +200,11 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
         //throw new Error('Forbidden')
         res.status(403).send('Forbidden - you do not own this listing');
         return;
+        //
+      } else {
+        output = row;
+        return knex('Listing').del().where('id', req.params.listingId);
       }
-      //
-      output = row;
-      return knex('Listing').del().where('id', req.params.listingId);
     })
     .then(() => {
       output = Object.assign({}, output);
