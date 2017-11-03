@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const knex = require('../knex');
+const jwt = require('jsonwebtoken');
 const Boom = require('boom');
 
 //const bodyParser = require('body-parser');
@@ -41,6 +42,19 @@ router.get('/listings', function(req, res, next) {
 
 // Get one listing:
 router.get('/listings/:listingId(\\d+)', function(req, res, next) {
+  // Decoding token passed in via client
+  let storedToken = req.headers.authorization;
+  let decodedToken = jwt.decode(storedToken);
+  console.log('LE TOKEN', decodedToken);
+  let leUserId = decodedToken.sub;
+  console.log('LE USER', leUserId);
+  //
+  // Need to be a registered user to see listing details:
+  if (!storedToken) {
+    res.status(401).send('Unauthorized - you need to be a registered user');
+    return;
+  }
+  //
   knex('Listing')
     .where('id', req.params.listingId)
     .first()
@@ -57,10 +71,21 @@ router.get('/listings/:listingId(\\d+)', function(req, res, next) {
       next(err);
     });
 });
-//.catch(err => next(err));
 
 // Create a listing:
 router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
+  // Decoding token passed in via client
+  let storedToken = req.headers.authorization;
+  let decodedToken = jwt.decode(storedToken);
+  console.log('LE TOKEN', decodedToken);
+  let leUserId = decodedToken.sub;
+  console.log('LE USER', leUserId);
+  //
+  // Need to be a registered user to make a listing:
+  if (!storedToken) {
+    res.status(401).send('Unauthorized - you need to be a registered user');
+    return;
+  }
   //
   console.log('DO I GET IN HERE?');
   console.log('BEFORE KNEX', req);
@@ -92,10 +117,31 @@ router.post('/users/:userId(\\d+)/listings', function(req, res, next) {
 
 // Update a listing:
 router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
+  // Decoding token passed in via client
+  let storedToken = req.headers.authorization;
+  let decodedToken = jwt.decode(storedToken);
+  console.log('LE TOKEN', decodedToken);
+  let leUserId = decodedToken.sub;
+  console.log('LE USER', leUserId);
+  //
+  // First you need to be a registered user to make it this far:
+  if (!storedToken) {
+    res.status(401).send('Unauthorized - you need to be a registered user');
+    return;
+  }
+  //
   knex('Listing')
     .where('id', req.params.listingId)
     .first()
     .then(listing => {
+      //to check edit authorization:
+      console.log('LE LISTING OWNER', listing.userId);
+      if (listing.userId !== leUserId) {
+        //throw new Error('Forbidden')
+        res.status(403).send('Forbidden - you do not own this listing');
+        return;
+      }
+      //
       return knex('Listing')
         .update(
           {
@@ -126,11 +172,32 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
 
 // Delete a listing:
 router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
+  // Decoding token passed in via client
+  let storedToken = req.headers.authorization;
+  let decodedToken = jwt.decode(storedToken);
+  console.log('LE TOKEN', decodedToken);
+  let leUserId = decodedToken.sub;
+  console.log('LE USER', leUserId);
+  //
+  // First you need to be a registered user to make it this far:
+  if (!storedToken) {
+    res.status(401).send('Unauthorized - you need to be a registered user');
+    return;
+  }
+  //
   let output;
   knex('Listing')
     .where('id', req.params.listingId)
     .first()
     .then(row => {
+      //to check delete authorization:
+      console.log('LE LISTING OWNER', row.userId);
+      if (row.userId !== leUserId) {
+        //throw new Error('Forbidden')
+        res.status(403).send('Forbidden - you do not own this listing');
+        return;
+      }
+      //
       output = row;
       return knex('Listing').del().where('id', req.params.listingId);
     })
