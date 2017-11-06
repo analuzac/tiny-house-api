@@ -12,7 +12,7 @@ module.exports = {
     mocha: true
   },
   rules: {
-    // 'no-console': 'off',
+    'no-console': 'off',
     // 'no-debugger': 'off'
     'no-ex-assign': 'off',
     'no-unused-vars': ['error', { args: 'none' }]
