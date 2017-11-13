@@ -40,6 +40,56 @@ router.get('/listings', function(req, res, next) {
     });
 });
 
+// Get filtered listings:
+router.get('/listings/filter/:filterVar', function(req, res, next) {
+  //
+  console.log('LE PARAMS', req.params);
+  knex('Listing')
+    .select('*')
+    .where('location', req.params.filterVar)
+    .then(listings => {
+      //console.log(listings);
+      let result = listings;
+      let output = [];
+      result.forEach(item => {
+        delete item.timeCreated;
+        delete item.timeModified;
+        output.push(Object.assign({}, item));
+      });
+
+      res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
+    });
+});
+
+// Get sorted listings:
+router.get('/listings/sort/:sortVar', function(req, res, next) {
+  //
+  console.log('LE PARAMS', req.params);
+  knex('Listing')
+    .select('*')
+    .orderBy(req.params.sortVar)
+    .then(listings => {
+      //console.log(listings);
+      let result = listings;
+      let output = [];
+      result.forEach(item => {
+        delete item.timeCreated;
+        delete item.timeModified;
+        output.push(Object.assign({}, item));
+      });
+
+      res.json(output);
+    })
+    .catch(err => {
+      console.log('THE_ERR', err);
+      next(err);
+    });
+});
+
 // Get one listing:
 router.get('/listings/:listingId(\\d+)', function(req, res, next) {
   // Decoding token passed in via client
