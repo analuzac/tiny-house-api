@@ -23,14 +23,19 @@ router.post('/token', function(req, res, next) {
     .where({ email: req.body.email })
     .then(([user]) => {
       if (!user) {
-        throw new Error('invalid credentials');
+        //throw new Error('invalid credentials');
+        res.set('Content-Type', 'text/plain');
+        return res.status(400).send('Bad email or password');
+        //res.set;
       }
       scope.user = user;
       return bcrypt.compare(password, user.hashedPassword);
     })
     .then(result => {
       if (result !== true) {
-        throw new Error('invalid credentials');
+        //throw new Error('invalid credentials');
+        res.set('Content-Type', 'text/plain');
+        return res.status(400).send('Bad email or password');
       }
       return signJWT({ sub: scope.user.id }, JWT_KEY);
     })

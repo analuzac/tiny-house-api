@@ -101,8 +101,9 @@ router.get('/listings/:listingId(\\d+)', function(req, res, next) {
   //
   // Need to be a registered user to see listing details:
   if (!storedToken) {
+    res.set('Content-Type', 'text/plain');
     res.status(401).send('Unauthorized - you need to be a registered user');
-    return;
+    //return;
   }
   //
   knex('Listing')
@@ -136,8 +137,9 @@ router.post('/listings', function(req, res, next) {
   //
   // Need to be a registered user to make a listing:
   if (!storedToken) {
+    res.set('Content-Type', 'text/plain');
     res.status(401).send('Unauthorized - you need to be a registered user');
-    return;
+    //return;
   }
   //
 
@@ -180,8 +182,9 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
   //
   // First you need to be a registered user to make it this far:
   if (!storedToken) {
+    res.set('Content-Type', 'text/plain');
     res.status(401).send('Unauthorized - you need to be a registered user');
-    return;
+    //return;
   }
   //
   knex('Listing')
@@ -192,8 +195,9 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
       console.log('LE LISTING OWNER', listing.userId);
       if (listing.userId !== leUserId) {
         //throw new Error('Forbidden')
+        res.set('Content-Type', 'text/plain');
         res.status(403).send('Forbidden - you do not own this listing');
-        return;
+        //return;
       }
       //
       return knex('Listing')
@@ -235,8 +239,9 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
   //
   // First you need to be a registeredF user to make it this far:
   if (!storedToken) {
+    res.set('Content-Type', 'text/plain');
     res.status(401).send('Unauthorized - you need to be a registered user');
-    return;
+    //return;
   }
   //
   let output;
@@ -248,8 +253,9 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
       console.log('LE LISTING OWNER', row.userId);
       if (row.userId !== leUserId) {
         //throw new Error('Forbidden')
+        res.set('Content-Type', 'text/plain');
         res.status(403).send('Forbidden - you do not own this listing');
-        return;
+        //return;
         //
       } else {
         output = row;
