@@ -41,7 +41,7 @@ router.get('/listings', function(req, res, next) {
 // Get filtered listings:
 router.get('/listings/filter/:filterVar', function(req, res, next) {
   //
-  console.log('LE PARAMS', req.params);
+  //console.log('LE PARAMS', req.params);
   knex('Listing')
     .select('*')
     .where('location', req.params.filterVar)
@@ -66,7 +66,7 @@ router.get('/listings/filter/:filterVar', function(req, res, next) {
 // Get sorted listings:
 router.get('/listings/sort/:sortVar', function(req, res, next) {
   //
-  console.log('LE PARAMS', req.params);
+  //console.log('LE PARAMS', req.params);
   knex('Listing')
     .select('*')
     .orderBy(req.params.sortVar)
@@ -184,21 +184,18 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
-  console.log('LE TOKEN', decodedToken);
+  //console.log('LE TOKEN', decodedToken);
   let leUserId = decodedToken.sub;
-  console.log('LE USER', leUserId);
+  //console.log('LE USER', leUserId);
   //
   knex('Listing')
     .where('id', req.params.listingId)
     .first()
     .then(listing => {
       //to check edit authorization:
-      console.log('LE LISTING OWNER', listing.userId);
+      //console.log('LE LISTING OWNER', listing.userId);
       if (listing.userId !== leUserId) {
-        //throw new Error('Forbidden')
-        res.set('Content-Type', 'text/plain');
-        return res.status(403).send('Forbidden - you do not own this listing');
-        //return;
+        throw new Error('HTTP_403');
       }
       //
       return knex('Listing')
@@ -220,10 +217,15 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
       let output = Object.assign({}, result[0]);
       delete output.timeCreated;
       delete output.timeModified;
-      console.log('INSIDE PATCH BACKEND', output);
+      //console.log('INSIDE PATCH BACKEND', output);
       res.json(output);
     })
     .catch(err => {
+      if (err.message === 'HTTP_403') {
+        res.set('Content-Type', 'text/plain');
+        res.status(403).send('Forbidden - you do not own this listing');
+        return;
+      }
       console.log('THE_ERR', err);
       next(err);
     });
@@ -243,9 +245,9 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
-  console.log('LE TOKEN', decodedToken);
+  //console.log('LE TOKEN', decodedToken);
   let leUserId = decodedToken.sub;
-  console.log('LE USER', leUserId);
+  //console.log('LE USER', leUserId);
   //
   let output;
   knex('Listing')
@@ -253,12 +255,9 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
     .first()
     .then(row => {
       //to check delete authorization:
-      console.log('LE LISTING OWNER', row.userId);
+      //console.log('LE LISTING OWNER', row.userId);
       if (row.userId !== leUserId) {
-        //throw new Error('Forbidden')
-        res.set('Content-Type', 'text/plain');
-        return res.status(403).send('Forbidden - you do not own this listing');
-        //return;
+        throw new Error('HTTP_403');
         //
       } else {
         output = row;
@@ -274,6 +273,11 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
       res.json(output);
     })
     .catch(err => {
+      if (err.message === 'HTTP_403') {
+        res.set('Content-Type', 'text/plain');
+        res.status(403).send('Forbidden - you do not own this listing');
+        return;
+      }
       console.log('THE_ERR', err);
       next(err);
     });
