@@ -12,7 +12,6 @@ const signJWT = promisify(jwt.sign);
 //
 // router.post('/token', tokenController.create);
 
-// Happy path:
 router.post('/token', function(req, res, next) {
   const scope = {};
   const email = req.body.email;
@@ -23,19 +22,14 @@ router.post('/token', function(req, res, next) {
     .where({ email: req.body.email })
     .then(([user]) => {
       if (!user) {
-        //throw new Error('invalid credentials');
-        res.set('Content-Type', 'text/plain');
-        return res.status(400).send('Bad email or password');
-        //res.set;
+        throw new Error('HTTP_400');
       }
       scope.user = user;
       return bcrypt.compare(password, user.hashedPassword);
     })
     .then(result => {
       if (result !== true) {
-        //throw new Error('invalid credentials');
-        res.set('Content-Type', 'text/plain');
-        return res.status(400).send('Bad email or password');
+        throw new Error('HTTP_400');
       }
       return signJWT({ sub: scope.user.id }, JWT_KEY);
     })
@@ -48,9 +42,14 @@ router.post('/token', function(req, res, next) {
       res.send(scope.user);
     })
     .catch(err => {
+      if (err.message === 'HTTP_400') {
+        res.set('Content-Type', 'text/plain');
+        res.status(400).send('Bad email or password');
+        return;
+      }
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
 
-// All non-happy paths:
 module.exports = router;

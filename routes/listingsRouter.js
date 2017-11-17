@@ -33,7 +33,7 @@ router.get('/listings', function(req, res, next) {
       res.json(output);
     })
     .catch(err => {
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
@@ -58,7 +58,7 @@ router.get('/listings/filter/:filterVar', function(req, res, next) {
       res.json(output);
     })
     .catch(err => {
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
@@ -83,7 +83,7 @@ router.get('/listings/sort/:sortVar', function(req, res, next) {
       res.json(output);
     })
     .catch(err => {
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
@@ -118,7 +118,7 @@ router.get('/listings/:listingId(\\d+)', function(req, res, next) {
       res.json(output);
     })
     .catch(err => {
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
@@ -165,7 +165,7 @@ router.post('/listings', function(req, res, next) {
       res.json(output);
     })
     .catch(err => {
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
@@ -226,7 +226,7 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
         res.status(403).send('Forbidden - you do not own this listing');
         return;
       }
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });
@@ -278,7 +278,7 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
         res.status(403).send('Forbidden - you do not own this listing');
         return;
       }
-      console.log('THE_ERR', err);
+      //console.log('THE_ERR', err);
       next(err);
     });
 });

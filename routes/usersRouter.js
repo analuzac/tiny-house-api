@@ -12,10 +12,19 @@ const signJWT = promisify(jwt.sign);
 //
 // router.post('/users', userController.create);
 
-// Happy path:
 router.post('/users', function(req, res, next) {
-  bcrypt
-    .hash(req.body.password, 12)
+  //Check for duplicate email:
+  knex('User')
+    .where({ email: req.body.email })
+    .then(result => {
+      if (result.length > 0) {
+        throw new Error('HTTP_400');
+      }
+      return true;
+    })
+    .then(() => {
+      return bcrypt.hash(req.body.password, 12);
+    })
     .then(hashedPassword => {
       return knex('User').insert(
         {
@@ -35,8 +44,15 @@ router.post('/users', function(req, res, next) {
 
       return res.send(user);
     })
-    .catch(err => next(err));
+    .catch(err => {
+      if (err.message === 'HTTP_400') {
+        res.set('Content-Type', 'text/plain');
+        res.status(400).send('Duplicate email');
+        return;
+      }
+      //console.log('THE_ERR', err);
+      next(err);
+    });
 });
-// All non-happy paths:
 
 module.exports = router;
