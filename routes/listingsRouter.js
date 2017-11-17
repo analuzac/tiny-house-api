@@ -15,8 +15,6 @@ const Boom = require('boom');
 // router.patch('/listings/:listingId(\\d+)', listingsController.patch);
 // router.delete('/listings/:listingId(\\d+)', listingsController.delete);
 
-// Happy paths:
-
 // Get all listings:
 router.get('/listings', function(req, res, next) {
   //
@@ -92,25 +90,26 @@ router.get('/listings/sort/:sortVar', function(req, res, next) {
 
 // Get one listing:
 router.get('/listings/:listingId(\\d+)', function(req, res, next) {
+  // Need to be a registered user to see listing details:
+  if (req.headers.authorization === 'null') {
+    res.set('Content-Type', 'text/plain');
+    return res
+      .status(401)
+      .send('Unauthorized - you need to be a registered user');
+  }
+  //
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
-  console.log('LE TOKEN', decodedToken);
+  //console.log('LE TOKEN', decodedToken);
   let leUserId = decodedToken.sub;
-  console.log('LE USER', leUserId);
-  //
-  // Need to be a registered user to see listing details:
-  if (!storedToken) {
-    res.set('Content-Type', 'text/plain');
-    res.status(401).send('Unauthorized - you need to be a registered user');
-    //return;
-  }
+  //console.log('LE USER', leUserId);
   //
   knex('Listing')
     .where('id', req.params.listingId)
     .first()
     .then(listing => {
-      console.log('LE LISTING OWNER', listing.userId);
+      //console.log('LE LISTING OWNER', listing.userId);
       let result = listing;
       let output = Object.assign({}, result);
       delete output.timeCreated;
@@ -128,21 +127,21 @@ router.get('/listings/:listingId(\\d+)', function(req, res, next) {
 router.post('/listings', function(req, res, next) {
   ///users/:userId(\\d+)/listings
   //
+  // Need to be a registered user to make a listing:
+  if (req.headers.authorization === 'null') {
+    res.set('Content-Type', 'text/plain');
+    return res
+      .status(401)
+      .send('Unauthorized - you need to be a registered user');
+  }
+  //
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
-  console.log('LE TOKEN', decodedToken);
+  //console.log('LE TOKEN', decodedToken);
   let leUserId = decodedToken.sub;
-  console.log('LE USER', leUserId);
+  //console.log('LE USER', leUserId);
   //
-  // Need to be a registered user to make a listing:
-  if (!storedToken) {
-    res.set('Content-Type', 'text/plain');
-    res.status(401).send('Unauthorized - you need to be a registered user');
-    //return;
-  }
-  //
-
   knex('Listing')
     .insert(
       {
@@ -157,12 +156,12 @@ router.post('/listings', function(req, res, next) {
       '*'
     )
     .then(listing => {
-      console.log('LE LISTING OWNER', listing.userId);
+      //console.log('LE LISTING OWNER', listing.userId);
       let result = listing;
       let output = Object.assign({}, result[0]);
       delete output.timeCreated;
       delete output.timeModified;
-      console.log('INSIDE POST BACKEND', output);
+      //console.log('INSIDE POST BACKEND', output);
       res.json(output);
     })
     .catch(err => {
@@ -173,19 +172,21 @@ router.post('/listings', function(req, res, next) {
 
 // Update a listing:
 router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
+  //
+  // First you need to be a registered user to make it this far:
+  if (req.headers.authorization === 'null') {
+    res.set('Content-Type', 'text/plain');
+    return res
+      .status(401)
+      .send('Unauthorized - you need to be a registered user');
+  }
+  //
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
   console.log('LE TOKEN', decodedToken);
   let leUserId = decodedToken.sub;
   console.log('LE USER', leUserId);
-  //
-  // First you need to be a registered user to make it this far:
-  if (!storedToken) {
-    res.set('Content-Type', 'text/plain');
-    res.status(401).send('Unauthorized - you need to be a registered user');
-    //return;
-  }
   //
   knex('Listing')
     .where('id', req.params.listingId)
@@ -196,7 +197,7 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
       if (listing.userId !== leUserId) {
         //throw new Error('Forbidden')
         res.set('Content-Type', 'text/plain');
-        res.status(403).send('Forbidden - you do not own this listing');
+        return res.status(403).send('Forbidden - you do not own this listing');
         //return;
       }
       //
@@ -230,19 +231,21 @@ router.patch('/listings/:listingId(\\d+)', function(req, res, next) {
 
 // Delete a listing:
 router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
+  //
+  // First you need to be a registered user to make it this far:
+  if (req.headers.authorization === 'null') {
+    res.set('Content-Type', 'text/plain');
+    return res
+      .status(401)
+      .send('Unauthorized - you need to be a registered user');
+  }
+  //
   // Decoding token passed in via client
   let storedToken = req.headers.authorization;
   let decodedToken = jwt.decode(storedToken);
   console.log('LE TOKEN', decodedToken);
   let leUserId = decodedToken.sub;
   console.log('LE USER', leUserId);
-  //
-  // First you need to be a registeredF user to make it this far:
-  if (!storedToken) {
-    res.set('Content-Type', 'text/plain');
-    res.status(401).send('Unauthorized - you need to be a registered user');
-    //return;
-  }
   //
   let output;
   knex('Listing')
@@ -254,7 +257,7 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
       if (row.userId !== leUserId) {
         //throw new Error('Forbidden')
         res.set('Content-Type', 'text/plain');
-        res.status(403).send('Forbidden - you do not own this listing');
+        return res.status(403).send('Forbidden - you do not own this listing');
         //return;
         //
       } else {
@@ -275,7 +278,5 @@ router.delete('/listings/:listingId(\\d+)', function(req, res, next) {
       next(err);
     });
 });
-
-// All non-happy paths:
 
 module.exports = router;
