@@ -6,6 +6,8 @@
   "scripts": {
     "knex": "knex",
     "test": "mocha"
+    "start": "node server.js"
+    "start:dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
