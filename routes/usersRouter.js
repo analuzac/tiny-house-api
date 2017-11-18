@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const knex = require('../knex');
 const Boom = require('boom');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const { promisify } = require('util');
 const { JWT_KEY } = require('../env');
 var jwt = require('jsonwebtoken');
@@ -23,7 +23,7 @@ router.post('/users', function(req, res, next) {
       return true;
     })
     .then(() => {
-      return bcrypt.hash(req.body.password, 12);
+      return bcryptjs.hash(req.body.password, 12);
     })
     .then(hashedPassword => {
       return knex('User').insert(

@@ -3,7 +3,7 @@
 process.env.NODE_ENV = 'test';
 
 // const assert = require('chai').assert;
-// const bcrypt = require('bcrypt');
+// const bcryptjs = require('bcryptjs');
 // const knex = require('../knex');
 
 const { suite, test } = require('mocha');

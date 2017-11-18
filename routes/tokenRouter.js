@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const knex = require('../knex');
 const Boom = require('boom');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const { promisify } = require('util');
 const { JWT_KEY } = require('../env');
 var jwt = require('jsonwebtoken');
@@ -25,7 +25,7 @@ router.post('/token', function(req, res, next) {
         throw new Error('HTTP_400');
       }
       scope.user = user;
-      return bcrypt.compare(password, user.hashedPassword);
+      return bcryptjs.compare(password, user.hashedPassword);
     })
     .then(result => {
       if (result !== true) {
